@@ -22,5 +22,29 @@ build_list5_6: list5_6.cpp
 list5_6: build_list5_6
 	./list5_6.out
 
+build_list5_10: list5_10.cpp
+	g++ -std=c++17 -g -Wall list5_10.cpp -o list5_10.out
+
+list5_10: build_list5_10
+	./list5_10.out
+
+build_list5_12: list5_12.cpp
+	g++ -std=c++17 -g -Wall list5_12.cpp -o list5_12.out
+
+list5_12: build_list5_12
+	./list5_12.out
+
+build_list5_13: list5_13.cpp
+	g++ -std=c++17 -g -Wall list5_13.cpp -o list5_13.out
+
+list5_13: build_list5_13
+	./list5_13.out
+
+build_list5_16: list5_16.cpp
+	g++ -std=c++17 -g -Wall list5_16.cpp -o list5_16.out
+
+list5_16: build_list5_16
+	./list5_16.out
+
 clean:
 	rm -rf *.out
