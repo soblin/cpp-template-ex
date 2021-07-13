@@ -58,5 +58,11 @@ build_list5_18: list5_18.cpp
 list5_18: build_list5_18
 	./list5_18.out
 
+build_list5_19: list5_19.cpp
+	g++ -std=c++17 -g -Wall list5_19.cpp -o list5_19.out
+
+list5_19: build_list5_19
+	./list5_19.out
+
 clean:
 	rm -rf *.out
