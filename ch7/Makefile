@@ -10,5 +10,17 @@ build_list7_6: list7_6.cpp
 list7_6: build_list7_6
 	./list7_6.out
 
+build_list7_15: list7_15.cpp
+	g++ -std=c++17 -g -Wall list7_15.cpp -o list7_15.out
+
+list7_15: build_list7_15
+	./list7_15.out
+
+build_list7_22: list7_22.cpp
+	g++ -std=c++17 -g -Wall list7_22.cpp -o list7_22.out
+
+list7_22: build_list7_22
+	./list7_22.out
+
 clean:
 	rm -rf *.out
