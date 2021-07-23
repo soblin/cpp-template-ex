@@ -1,3 +1,30 @@
+#include <type_traits>
+
+namespace util {
+template <bool Cond, class Then, class Else>
+struct if_;
+
+template <class Then, class Else>
+struct if_<true, Then, Else> {
+  using type = Then;
+};
+
+template <class Then, class Else>
+struct if_<false, Then, Else> {
+  using type = Else;
+};
+} // namespace util
+
+struct function_ptr_tag {};
+struct function_obj_tag {};
+
+template <class Func>
+struct get_function_tag {
+  using type = typename util::if_<std::is_pointer<Func>::value,
+                                  function_ptr_tag,
+                                  function_obj_tag>::type;
+};
+
 union any_pointer {
   void (*func_ptr)();
   void* obj_ptr;
@@ -18,10 +45,7 @@ struct function_obj_manager {
     Func* func = reinterpret_cast<Func*>(func_obj.obj_ptr);
     return (*func)();
   }
-  static void destroy(any_pointer function_obj_ptr) {
-    // Func* func = reinterpret_cast<Func*>(function_obj_ptr.obj_ptr);
-    // delete func;
-  }
+  static void destroy(any_pointer function_obj_ptr) {}
 };
 
 template <class Signature>
@@ -39,21 +63,28 @@ public:
     clear();
   }
 
-  template <class Func>
-  void set_function_ptr(Func func_ptr) {
+  template <class FuncPtr>
+  void assign_to(FuncPtr func_ptr, function_ptr_tag) {
     clear();
-    invoke_ = &function_ptr_manager<Func, R>::invoke;
-    destroy_ = &function_ptr_manager<Func, R>::destroy;
+    invoke_ = &function_ptr_manager<FuncPtr, R>::invoke;
+    destroy_ = &function_ptr_manager<FuncPtr, R>::destroy;
     functor_.func_ptr = reinterpret_cast<void (*)()>(func_ptr);
   }
 
-  template <class Func>
-  void set_function_obj(Func& func_obj) {
+  template <class FuncObj>
+  void assign_to(FuncObj& func_obj, function_obj_tag) {
     clear();
-    invoke_ = &function_obj_manager<Func, R>::invoke;
-    destroy_ = &function_obj_manager<Func, R>::destroy;
+    invoke_ = &function_obj_manager<FuncObj, R>::invoke;
+    destroy_ = &function_obj_manager<FuncObj, R>::destroy;
     // functor_.obj_ptr = reinterpret_cast<void*>(new Func(func_obj));
     functor_.obj_ptr = reinterpret_cast<void*>(&func_obj);
+  }
+
+  template <class Func>
+  function& operator=(Func& func) {
+    using func_tag = typename get_function_tag<Func>::type;
+    assign_to(func, func_tag());
+    return *this;
   }
 
   R operator()() {
@@ -90,10 +121,10 @@ public:
 
 int main() {
   function<int()> f;
-  f.set_function_ptr(&func);
+  f = func;
   std::cout << f() << std::endl;
   Closure c(1);
-  f.set_function_obj(c);
+  f = c;
   std::cout << f() << std::endl;
   c.increment();
   std::cout << f() << std::endl;
