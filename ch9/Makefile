@@ -22,5 +22,11 @@ build_list9_10: list9_10.cpp
 list9_10: build_list9_10
 	./list9_10.out
 
+build_list9_11: list9_11.cpp
+	g++ -std=c++17 -g -Wall list9_11.cpp -o list9_11.out
+
+list9_11: build_list9_11
+	./list9_11.out
+
 clean:
 	rm -rf *.out
